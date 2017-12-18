@@ -4,7 +4,7 @@
         <application android:theme="@android:style/Theme.Holo.Light.NoActionBar" />
     </gap:config-file>
     <name>Globe Notes</name>
-    <description>Dictation app for internation students.</description>
+    <description>Dictation app for international students.</description>
     <author email="taylor@taylorhamling.com" href="https://www.taylorhamling.com/">Taylor Hamling</author>
     <content src="index.html" />
     <access origin="*" />
