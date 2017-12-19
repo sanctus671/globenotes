@@ -185,43 +185,56 @@ var HomePage = (function () {
             }
         });
         this.getSupportedLanguages();
-    }
-    HomePage.prototype.stopListening = function () {
-        var _this = this;
-        this.speechRecognition.stopListening().then(function () {
-            _this.properties.isRecording = false;
-        });
-    };
-    HomePage.prototype.getPermission = function () {
-        var _this = this;
-        this.speechRecognition.hasPermission()
-            .then(function (hasPermission) {
-            if (!hasPermission) {
-                _this.properties.isRecording = false;
-                _this.speechRecognition.requestPermission();
+        this.plt.ready().then(function () {
+            if (window.SpeechRecognition) {
+                _this.setupRecognition();
             }
         });
+    }
+    HomePage.prototype.setupRecognition = function () {
+        var _this = this;
+        this.recognitionObject = new window.SpeechRecognition();
+        this.recognitionObject.continuous = true;
+        this.recognitionObject.lang = this.properties.language;
+        this.recognitionObject.maxAlternatives = 3;
+        this.recognitionObject.onnomatch = (function (event) {
+            console.log('No match found.');
+        });
+        this.recognitionObject.onstart = (function (event) {
+            console.log('Started recognition.');
+            _this.properties.isRecording = true;
+            _this.properties.currentMatch = "";
+        });
+        this.recognitionObject.onend = (function (event) {
+            console.log('Stopped recognition.');
+            if (_this.properties.isRecording) {
+                _this.recognitionObject.start();
+            }
+            else {
+                _this.notes.push(_this.properties.currentMatch);
+                _this.storage.set("notes", _this.notes);
+            }
+        });
+        this.recognitionObject.onerror = (function (event) {
+            console.log('Error...' + event.error);
+            if (!_this.properties.isRecording && _this.properties.currentMatch) {
+                _this.notes.push(_this.properties.currentMatch);
+                _this.storage.set("notes", _this.notes);
+            }
+        });
+        this.recognitionObject.onresult = (function (event) {
+            if (event.results) {
+                var result = event.results[0];
+                _this.properties.currentMatch = _this.properties.currentMatch ? _this.properties.currentMatch + " " + result : result;
+            }
+        });
+    };
+    HomePage.prototype.stopListening = function () {
+        this.properties.isRecording = false;
     };
     HomePage.prototype.startListening = function () {
-        var _this = this;
-        this.getPermission();
-        var options = {
-            language: this.properties.language
-        };
         this.properties.isRecording = true;
-        this.speechRecognition.startListening(options).subscribe(function (matches) {
-            console.log(matches);
-            _this.properties.isRecording = false;
-            if (matches.length > 0) {
-                if (_this.properties.currentMatch) {
-                    var note = _this.properties.currentMatch;
-                    _this.notes.push(note);
-                    _this.storage.set("notes", _this.notes);
-                }
-                _this.properties.currentMatch = matches[0];
-            }
-            //this.cd.detectChanges();
-        }, function (onerror) { _this.properties.isRecording = false; });
+        this.recognitionObject.start();
     };
     HomePage.prototype.getSupportedLanguages = function () {
         var _this = this;
@@ -244,6 +257,7 @@ var HomePage = (function () {
                     handler: function (data) {
                         console.log(data);
                         _this.properties.language = data;
+                        _this.recognitionObject.lang = _this.properties.language;
                     }
                 }
             ],
