@@ -219,17 +219,6 @@ var HomePage = (function () {
                     }
                 }, 100);
             }
-            else {
-                //recording has finished
-                _this._zone.run(function () {
-                    if (_this.properties.currentMatch) {
-                        console.log(_this.properties.currentMatch);
-                        _this.notes.push(_this.properties.currentMatch);
-                        _this.storage.set("notes", _this.notes);
-                        _this.properties.currentMatch = "";
-                    }
-                });
-            }
         });
         this.recognitionObject.onerror = (function (event) {
             console.log('Error...' + event.error);
@@ -244,7 +233,7 @@ var HomePage = (function () {
                 console.log(event);
                 var result_1 = event.results[0][0].transcript;
                 _this._zone.run(function () {
-                    _this.properties.currentMatch = _this.properties.currentMatch ? _this.properties.currentMatch + " " + result_1 : result_1;
+                    _this.properties.currentMatch = _this.properties.currentMatch ? _this.properties.currentMatch + " " + result_1 + "." : result_1 + ".";
                     console.log(_this.properties.currentMatch);
                 });
             }
@@ -256,6 +245,12 @@ var HomePage = (function () {
             this.properties.errorRestarting = false;
         }
         else {
+            if (this.properties.currentMatch) {
+                console.log(this.properties.currentMatch);
+                this.notes.push(this.properties.currentMatch);
+                this.storage.set("notes", this.notes);
+                this.properties.currentMatch = "";
+            }
             this.properties.isRecording = true;
             this.recognitionObject.start();
         }
