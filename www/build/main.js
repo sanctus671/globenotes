@@ -214,10 +214,16 @@ var HomePage = (function () {
             if (_this.properties.isRecording) {
                 console.log("Attempting to restart.");
                 _this.recognitionObject.start();
-                while (_this.properties.errorRestarting) {
+                var errorLoop_1 = setInterval(function () {
                     console.log("is error loop");
-                    _this.recognitionObject.start();
-                }
+                    if (_this.properties.errorRestarting) {
+                        _this.recognitionObject.start();
+                    }
+                    else {
+                        console.log("closing error loop");
+                        clearInterval(errorLoop_1);
+                    }
+                }, 100);
             }
         });
         this.recognitionObject.onerror = (function (event) {
@@ -239,6 +245,7 @@ var HomePage = (function () {
     HomePage.prototype.toggleListening = function () {
         if (this.properties.isRecording) {
             this.properties.isRecording = false;
+            this.properties.errorRestarting = false;
         }
         else {
             this.properties.isRecording = true;
