@@ -173,7 +173,7 @@ var HomePage = (function () {
         this.cd = cd;
         this.storage = storage;
         this.alertCtrl = alertCtrl;
-        this.properties = { isRecording: false, language: "en-US", isIos: this.plt.is('ios'), currentMatch: "" };
+        this.properties = { isRecording: false, language: "en-US", isIos: this.plt.is('ios'), currentMatch: "", errorRestarting: false };
         this.notes = [];
         this.languages = [];
         this.storage.get("notes").then(function (data) {
@@ -200,28 +200,38 @@ var HomePage = (function () {
         });
         this.recognitionObject.onstart = (function (event) {
             console.log('Started recognition.');
-            if (_this.properties.currentMatch) {
+            //is a restart
+            if (_this.properties.currentMatch && !_this.properties.isRecording) {
                 _this.notes.push(_this.properties.currentMatch);
                 _this.storage.set("notes", _this.notes);
+                _this.properties.isRecording = true;
+                _this.properties.currentMatch = "";
             }
-            _this.properties.isRecording = true;
-            _this.properties.currentMatch = "";
+            _this.properties.errorRestarting = false;
         });
         this.recognitionObject.onend = (function (event) {
             console.log('Stopped recognition.');
             if (_this.properties.isRecording) {
                 console.log("Attempting to restart.");
-                setTimeout(function () { _this.recognitionObject.start(); }, 100);
+                _this.recognitionObject.start();
+                while (_this.properties.errorRestarting) {
+                    console.log("is error loop");
+                    _this.recognitionObject.start();
+                }
             }
         });
         this.recognitionObject.onerror = (function (event) {
             console.log('Error...' + event.error);
+            if (event.error === "RecognitionService busy") {
+                console.log("setting error property to true");
+                _this.properties.errorRestarting = true;
+            }
         });
         this.recognitionObject.onresult = (function (event) {
             if (event.results) {
                 console.log("Results found");
                 console.log(event);
-                var result = event.results[0];
+                var result = event.results[0][0].transcript;
                 _this.properties.currentMatch = _this.properties.currentMatch ? _this.properties.currentMatch + " " + result : result;
             }
         });
