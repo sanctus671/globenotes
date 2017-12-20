@@ -1,6 +1,6 @@
 webpackJsonp([0],{
 
-/***/ 110:
+/***/ 109:
 /***/ (function(module, exports) {
 
 function webpackEmptyAsyncContext(req) {
@@ -13,11 +13,11 @@ function webpackEmptyAsyncContext(req) {
 webpackEmptyAsyncContext.keys = function() { return []; };
 webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
 module.exports = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = 110;
+webpackEmptyAsyncContext.id = 109;
 
 /***/ }),
 
-/***/ 151:
+/***/ 150:
 /***/ (function(module, exports) {
 
 function webpackEmptyAsyncContext(req) {
@@ -30,7 +30,7 @@ function webpackEmptyAsyncContext(req) {
 webpackEmptyAsyncContext.keys = function() { return []; };
 webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
 module.exports = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = 151;
+webpackEmptyAsyncContext.id = 150;
 
 /***/ }),
 
@@ -151,8 +151,7 @@ var SettingsPage = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HomePage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_speech_recognition__ = __webpack_require__(198);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_storage__ = __webpack_require__(199);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_storage__ = __webpack_require__(198);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -166,12 +165,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-
 var HomePage = (function () {
-    function HomePage(navCtrl, speechRecognition, plt, cd, storage, alertCtrl) {
+    function HomePage(navCtrl, plt, cd, storage, alertCtrl) {
         var _this = this;
         this.navCtrl = navCtrl;
-        this.speechRecognition = speechRecognition;
         this.plt = plt;
         this.cd = cd;
         this.storage = storage;
@@ -184,8 +181,9 @@ var HomePage = (function () {
                 _this.notes = data;
             }
         });
-        this.getSupportedLanguages();
+        this.setSupportedLanguages();
         this.plt.ready().then(function () {
+            console.log(window);
             if (window.SpeechRecognition) {
                 _this.setupRecognition();
             }
@@ -202,28 +200,27 @@ var HomePage = (function () {
         });
         this.recognitionObject.onstart = (function (event) {
             console.log('Started recognition.');
+            if (_this.properties.currentMatch) {
+                _this.notes.push(_this.properties.currentMatch);
+                _this.storage.set("notes", _this.notes);
+            }
             _this.properties.isRecording = true;
             _this.properties.currentMatch = "";
         });
         this.recognitionObject.onend = (function (event) {
             console.log('Stopped recognition.');
             if (_this.properties.isRecording) {
-                _this.recognitionObject.start();
-            }
-            else {
-                _this.notes.push(_this.properties.currentMatch);
-                _this.storage.set("notes", _this.notes);
+                console.log("Attempting to restart.");
+                setTimeout(function () { _this.recognitionObject.start(); }, 100);
             }
         });
         this.recognitionObject.onerror = (function (event) {
             console.log('Error...' + event.error);
-            if (!_this.properties.isRecording && _this.properties.currentMatch) {
-                _this.notes.push(_this.properties.currentMatch);
-                _this.storage.set("notes", _this.notes);
-            }
         });
         this.recognitionObject.onresult = (function (event) {
             if (event.results) {
+                console.log("Results found");
+                console.log(event);
                 var result = event.results[0];
                 _this.properties.currentMatch = _this.properties.currentMatch ? _this.properties.currentMatch + " " + result : result;
             }
@@ -237,13 +234,6 @@ var HomePage = (function () {
             this.properties.isRecording = true;
             this.recognitionObject.start();
         }
-    };
-    HomePage.prototype.getSupportedLanguages = function () {
-        var _this = this;
-        this.speechRecognition.getSupportedLanguages()
-            .then(function (languages) { _this.languages = languages; })
-            .catch(function () {
-        });
     };
     HomePage.prototype.changeLanguage = function () {
         var _this = this;
@@ -267,32 +257,109 @@ var HomePage = (function () {
         };
         for (var _i = 0, _a = this.languages; _i < _a.length; _i++) {
             var language = _a[_i];
-            data.inputs.push({ type: 'radio', label: language, value: language, checked: language === this.properties.language });
+            data.inputs.push({ type: 'radio', label: language.name, value: language.code, checked: language.code === this.properties.language });
         }
         var alert = this.alertCtrl.create(data);
         alert.present();
     };
+    HomePage.prototype.formatLanguage = function () {
+        var formatted = "";
+        for (var _i = 0, _a = this.languages; _i < _a.length; _i++) {
+            var language = _a[_i];
+            if (language.code === this.properties.language) {
+                formatted = language.name;
+                break;
+            }
+        }
+        return formatted;
+    };
+    HomePage.prototype.setSupportedLanguages = function () {
+        this.languages = [
+            { name: "Romanian", code: "ro-RO" },
+            { name: "English (Indian)", code: "en-IN" },
+            { name: "Hebrew (Israel)", code: "he-IL" },
+            { name: "Turkish", code: "tr-TR" },
+            { name: "English (New Zealand)", code: "en-NZ" },
+            { name: "Swedish (Sweden)", code: "sv-SE" },
+            { name: "French (Belgium)", code: "fr-BE" },
+            { name: "Italian (Switzerland)", code: "it-CH" },
+            { name: "German (Switzerland)", code: "de-CH" },
+            { name: "Polish", code: "pl-PL" },
+            { name: "Portuguese", code: "pt-PT" },
+            { name: "Ukrainian (Ukraine)", code: "uk-UA" },
+            { name: "Finnish (Finland)", code: "fi-FI" },
+            { name: "Vietnamese (Viet Nam)", code: "vi-VN" },
+            { name: "Arabic (Saudi Arabia)", code: "ar-SA" },
+            { name: "Chinese (Taiwan)", code: "zh-TW" },
+            { name: "Spanish (Castilian)", code: "es-ES" },
+            { name: "English (British)", code: "en-GB" },
+            { name: "Traditional Chinese", code: "yue-CN" },
+            { name: "Thai", code: "th-TH" },
+            { name: "English (Indonesia)", code: "en-ID" },
+            { name: "Japanese (Japan)", code: "ja-JP" },
+            { name: "English (Saudi Arabia)", code: "en-SA" },
+            { name: "English (U.A.E.)", code: "en-AE" },
+            { name: "Danish (Denmark)", code: "da-DK" },
+            { name: "French (France)", code: "fr-FR" },
+            { name: "Slovak", code: "sk-SK" },
+            { name: "German (Austria)", code: "de-AT" },
+            { name: "Malay", code: "ms-MY" },
+            { name: "Hungarian", code: "hu-HU" },
+            { name: "Catalan", code: "ca-ES" },
+            { name: "Korean", code: "ko-KR" },
+            { name: "French (Switzerland)", code: "fr-CH" },
+            { name: "Norwegian", code: "nb-NO" },
+            { name: "English (Australia)", code: "en-AU" },
+            { name: "Greek", code: "el-GR" },
+            { name: "Russian", code: "ru-RU" },
+            { name: "Chinese (Mainland China)", code: "zh-CN" },
+            { name: "English (American)", code: "en-US" },
+            { name: "English (Ireland)", code: "en-IE" },
+            { name: "Dutch (Belgium)", code: "nl-BE" },
+            { name: "Spanish (Colombian)", code: "es-CO" },
+            { name: "Portuguese (Brazilian)", code: "pt-BR" },
+            { name: "Spanish (American)", code: "es-US" },
+            { name: "Croatian", code: "hr-HR" },
+            { name: "French (Canada)", code: "fr-CA" },
+            { name: "Chinese (Hong Kong)", code: "zh-HK" },
+            { name: "Spanish (Mexican)", code: "es-MX" },
+            { name: "Indonesian", code: "id-ID" },
+            { name: "Italian (Italy)", code: "it-IT" },
+            { name: "Dutch (Netherlands)", code: "nl-NL" },
+            { name: "Czech (Czech Republic)", code: "cs-CZ" },
+            { name: "English (South Africa)", code: "en-ZA" },
+            { name: "Spanish (Chile)", code: "es-CL" },
+            { name: "English (Philippines)", code: "en-PH" },
+            { name: "English (Canadian)", code: "en-CA" },
+            { name: "English (Singapore)", code: "en-SG" },
+            { name: "German", code: "de-DE" }
+        ];
+        this.languages.sort(function (a, b) {
+            return a.name == b.name ? 0 : +(a.name > b.name) || -1;
+            ;
+        });
+    };
     HomePage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-home',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/`<ion-header>\n  <ion-navbar color="primary">\n    <ion-title>Globe Notes</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n    <ion-card class="dictate-card">\n        <ion-card-header>\n            <a (click)="changeLanguage()">{{properties.language}}</a>\n            <div class="actions">\n                <ion-icon name="star-outline"></ion-icon>\n                <ion-icon name="copy"></ion-icon>\n                <ion-icon name="send"></ion-icon>\n            </div>\n        </ion-card-header>\n        <ion-card-content>\n            <p *ngIf="!properties.currentMatch">Tap the mic to start dictating...</p>\n            <p *ngIf="properties.currentMatch">{{properties.currentMatch}}</p>\n        </ion-card-content>\n        <div class="card-footer">\n            Translate\n        </div>\n        <div class="dictate-button">\n            <button ion-fab (click)="toggleListening()" [color]="properties.isRecording ? \'danger\' : \'primary\'"><ion-icon name="mic"></ion-icon></button>\n        </div>\n    </ion-card>\n    \n    <div class="previous">\n        <ion-card>\n            <ion-card-content *ngFor="let note of notes">\n                <p>{{note}}</p>            \n                <ion-buttons end>\n                    <button ion-button icon-only clear>\n                        <ion-icon name="star-outline"></ion-icon>\n                    </button>                \n                </ion-buttons>\n            </ion-card-content>\n\n        </ion-card>\n    </div>\n    \n    \n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/
+            selector: 'page-home',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/`<ion-header>\n  <ion-navbar color="primary">\n    <ion-title>Globe Notes</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n    <ion-card class="dictate-card">\n        <ion-card-header>\n            <a (click)="changeLanguage()">{{formatLanguage()}}</a>\n            <div class="actions">\n                <ion-icon name="star-outline"></ion-icon>\n                <ion-icon name="copy"></ion-icon>\n                <ion-icon name="send"></ion-icon>\n            </div>\n        </ion-card-header>\n        <ion-card-content>\n            <p *ngIf="!properties.currentMatch">Tap the mic to start dictating...</p>\n            <p *ngIf="properties.currentMatch">{{properties.currentMatch}}</p>\n        </ion-card-content>\n        <div class="card-footer">\n            Translate\n        </div>\n        <div class="dictate-button">\n            <button ion-fab (click)="toggleListening()" [color]="properties.isRecording ? \'danger\' : \'primary\'"><ion-icon name="mic"></ion-icon></button>\n        </div>\n    </ion-card>\n    \n    <div class="previous">\n        <ion-card>\n            <ion-card-content *ngFor="let note of notes">\n                <p>{{note}}</p>            \n                <ion-buttons end>\n                    <button ion-button icon-only clear>\n                        <ion-icon name="star-outline"></ion-icon>\n                    </button>                \n                </ion-buttons>\n            </ion-card-content>\n\n        </ion-card>\n    </div>\n    \n    \n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/
         }),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_speech_recognition__["a" /* SpeechRecognition */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_speech_recognition__["a" /* SpeechRecognition */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_storage__["b" /* Storage */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]) === "function" && _f || Object])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]) === "function" && _e || Object])
     ], HomePage);
     return HomePage;
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e;
 }());
 
 //# sourceMappingURL=home.js.map
 
 /***/ }),
 
-/***/ 200:
+/***/ 199:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(201);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(224);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_module__ = __webpack_require__(223);
 
 
 Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_1__app_module__["a" /* AppModule */]);
@@ -300,7 +367,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* pl
 
 /***/ }),
 
-/***/ 224:
+/***/ 223:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -308,22 +375,20 @@ Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* pl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ionic_angular__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_component__ = __webpack_require__(267);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_component__ = __webpack_require__(266);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_settings_settings__ = __webpack_require__(196);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_saved_saved__ = __webpack_require__(195);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__pages_home_home__ = __webpack_require__(197);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__pages_tabs_tabs__ = __webpack_require__(194);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__ionic_native_status_bar__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__ionic_native_status_bar__ = __webpack_require__(190);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__ionic_native_splash_screen__ = __webpack_require__(193);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__ionic_native_speech_recognition__ = __webpack_require__(198);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__ionic_storage__ = __webpack_require__(199);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__ionic_storage__ = __webpack_require__(198);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-
 
 
 
@@ -352,7 +417,7 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["d" /* IonicModule */].forRoot(__WEBPACK_IMPORTED_MODULE_3__app_component__["a" /* MyApp */], {}, {
                     links: []
                 }),
-                __WEBPACK_IMPORTED_MODULE_11__ionic_storage__["a" /* IonicStorageModule */].forRoot()
+                __WEBPACK_IMPORTED_MODULE_10__ionic_storage__["a" /* IonicStorageModule */].forRoot()
             ],
             bootstrap: [__WEBPACK_IMPORTED_MODULE_2_ionic_angular__["b" /* IonicApp */]],
             entryComponents: [
@@ -365,7 +430,6 @@ var AppModule = (function () {
             providers: [
                 __WEBPACK_IMPORTED_MODULE_8__ionic_native_status_bar__["a" /* StatusBar */],
                 __WEBPACK_IMPORTED_MODULE_9__ionic_native_splash_screen__["a" /* SplashScreen */],
-                __WEBPACK_IMPORTED_MODULE_10__ionic_native_speech_recognition__["a" /* SpeechRecognition */],
                 { provide: __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ErrorHandler */], useClass: __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["c" /* IonicErrorHandler */] }
             ]
         })
@@ -377,14 +441,14 @@ var AppModule = (function () {
 
 /***/ }),
 
-/***/ 267:
+/***/ 266:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MyApp; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__ = __webpack_require__(190);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__ = __webpack_require__(193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_tabs_tabs__ = __webpack_require__(194);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -423,5 +487,5 @@ var MyApp = (function () {
 
 /***/ })
 
-},[200]);
+},[199]);
 //# sourceMappingURL=main.js.map
