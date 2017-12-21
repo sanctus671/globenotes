@@ -187,7 +187,7 @@ var HomePage = (function () {
             console.log(window);
             if (window.SpeechRecognition) {
                 _this.setupRecognition();
-                console.log(audioPoll);
+                console.log(DBMeter);
                 console.log(AudioHandler);
             }
         });
@@ -253,10 +253,10 @@ var HomePage = (function () {
         if (this.properties.isRecording) {
             this.properties.isRecording = false;
             this.properties.errorRestarting = false;
-            audioPoll.stop(function () {
-                console.log("mic polling stopped");
-            }, function () {
-                console.log("error stopping mic polling");
+            DBMeter.stop(function () {
+                console.log("DBMeter well stopped");
+            }, function (e) {
+                console.log('code: ' + e.code + ', message: ' + e.message);
             });
         }
         else {
@@ -268,22 +268,10 @@ var HomePage = (function () {
             }
             this.properties.isRecording = true;
             this.recognitionObject.start();
-            audioPoll.start(function () {
-                console.log("mic polling started");
-            }, function () {
-                console.log("error starting mic polling");
+            DBMeter.start(function (dB) {
+                console.log(dB);
             });
         }
-    };
-    HomePage.prototype.getMicVolume = function () {
-        var _this = this;
-        audioPoll.read(function (reading) {
-            console.log(reading);
-            _this.properties.micVolume = reading.volume;
-        }, function () {
-            console.log("erroring reading mic");
-        });
-        return this.properties.micVolume;
     };
     HomePage.prototype.changeLanguage = function () {
         var _this = this;
