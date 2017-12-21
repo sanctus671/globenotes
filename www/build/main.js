@@ -187,7 +187,7 @@ var HomePage = (function () {
             console.log(window);
             if (window.SpeechRecognition) {
                 _this.setupRecognition();
-                console.log(DBMeter);
+                console.log(audioinput);
                 console.log(AudioHandler);
             }
         });
@@ -253,11 +253,6 @@ var HomePage = (function () {
         if (this.properties.isRecording) {
             this.properties.isRecording = false;
             this.properties.errorRestarting = false;
-            DBMeter.stop(function () {
-                console.log("DBMeter well stopped");
-            }, function (e) {
-                console.log('code: ' + e.code + ', message: ' + e.message);
-            });
         }
         else {
             if (this.properties.currentMatch) {
@@ -268,9 +263,10 @@ var HomePage = (function () {
             }
             this.properties.isRecording = true;
             this.recognitionObject.start();
-            DBMeter.start(function (dB) {
-                console.log(dB);
+            audioinput.start({
+                streamToWebAudio: true
             });
+            audioinput.connect(audioinput.getAudioContext().destination);
         }
     };
     HomePage.prototype.changeLanguage = function () {
