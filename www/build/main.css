@@ -25688,7 +25688,11 @@ ion-navbar.toolbar {
   height: 56px;
   position: absolute;
   width: 100%;
-  bottom: -28px;
+  bottom: -22px;
+}
+
+p.pre-recording {
+  color: #dedede;
 }
 
 .dictate-card .dictate-button button {
@@ -25697,12 +25701,20 @@ ion-navbar.toolbar {
 
 .dictate-card .card-footer {
   text-align: right;
-  padding: 13px 16px;
+  min-height: 44px;
 }
 
 .dictate-card .actions {
   display: inline-block;
   float: right;
+  margin-top: -5px;
+  min-height: 29px;
+}
+
+.actions button {
+  min-width: 10px;
+  width: 25px;
+  height: 20px;
 }
 
 .previous {
@@ -25713,6 +25725,7 @@ ion-navbar.toolbar {
   min-height: 34px;
   display: inline-block;
   margin-top: 10px;
+  max-width: calc(100% - 60px);
 }
 
 .previous .card ion-buttons {

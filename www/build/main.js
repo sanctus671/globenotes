@@ -81,6 +81,7 @@ var TabsPage = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SavedPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_storage__ = __webpack_require__(198);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -92,17 +93,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
 var SavedPage = (function () {
-    function SavedPage(navCtrl) {
+    function SavedPage(navCtrl, storage) {
         this.navCtrl = navCtrl;
+        this.storage = storage;
     }
+    SavedPage.prototype.ionViewDidEnter = function () {
+        var _this = this;
+        this.storage.get("savedNotes").then(function (notes) {
+            _this.notes = notes;
+        });
+    };
     SavedPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-saved',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\saved\saved.html"*/`<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Saved\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n\n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\saved\saved.html"*/
+            selector: 'page-saved',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\saved\saved.html"*/`<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Saved\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n\n    <ion-card *ngFor="let note of notes">\n        <ion-card-content>\n            <p>{{note.note}}</p>\n        </ion-card-content>\n\n    </ion-card>    \n    \n    \n    \n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\saved\saved.html"*/
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */]) === "function" && _b || Object])
     ], SavedPage);
     return SavedPage;
+    var _a, _b;
 }());
 
 //# sourceMappingURL=saved.js.map
@@ -152,6 +162,8 @@ var SettingsPage = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ionic_storage__ = __webpack_require__(198);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ionic_native_clipboard__ = __webpack_require__(278);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ionic_native_social_sharing__ = __webpack_require__(279);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -165,8 +177,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+
 var HomePage = (function () {
-    function HomePage(navCtrl, plt, cd, _zone, storage, alertCtrl) {
+    function HomePage(navCtrl, plt, cd, _zone, storage, alertCtrl, clipboard, sharer, toastCtrl) {
         var _this = this;
         this.navCtrl = navCtrl;
         this.plt = plt;
@@ -174,8 +188,15 @@ var HomePage = (function () {
         this._zone = _zone;
         this.storage = storage;
         this.alertCtrl = alertCtrl;
-        this.properties = { isRecording: false, language: "en-US", isIos: this.plt.is('ios'), currentMatch: "", errorRestarting: false, micVolume: 0 };
-        this.notes = [];
+        this.clipboard = clipboard;
+        this.sharer = sharer;
+        this.toastCtrl = toastCtrl;
+        this.properties = { isRecording: false, language: "en-NZ", isIos: this.plt.is('ios'), currentMatch: "", errorRestarting: false, micVolume: 0, currentSaved: false, currentId: false };
+        this.notes = [
+            { note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce massa enim, tempus ut nunc et, volutpat semper ligula. Fusce vitae porta nisl. Fusce sit amet arcu ipsum. Aenean a aliquam est. Cras ipsum enim, ultricies at ullamcorper in, faucibus sit amet tellus. Curabitur sed odio a nibh scelerisque condimentum eget pellentesque nisi. Donec sed eros neque. Nulla accumsan pellentesque mi sit amet viverra. Aliquam posuere nec libero eget euismod. Nam fringilla, mauris ut lobortis bibendum, dolor tellus pellentesque ante, sit amet viverra odio orci non sem. Donec aliquet nisl quis bibendum placerat. Vivamus tincidunt ligula nunc, et tincidunt metus hendrerit quis. Etiam ut egestas quam, eget eleifend diam.",
+                saved: false },
+            { note: "testing", saved: true }
+        ];
         this.languages = [];
         this.storage.get("notes").then(function (data) {
             if (data) {
@@ -243,7 +264,7 @@ var HomePage = (function () {
                 console.log(event);
                 var result_1 = event.results[0][0].transcript;
                 _this._zone.run(function () {
-                    _this.properties.currentMatch = _this.properties.currentMatch ? _this.properties.currentMatch + " " + result_1 + "." : result_1 + ".";
+                    _this.properties.currentMatch = _this.properties.currentMatch ? _this.properties.currentMatch + " " + (result_1.charAt(0).toUpperCase() + result_1.slice(1)) + "." : result_1 + ".";
                     console.log(_this.properties.currentMatch);
                 });
             }
@@ -256,18 +277,119 @@ var HomePage = (function () {
         if (this.properties.isRecording) {
             this.properties.isRecording = false;
             this.properties.errorRestarting = false;
-            AudioHandler.unmuteApp();
+            setTimeout(function () { AudioHandler.unmuteApp(); }, 500);
         }
         else {
             if (this.properties.currentMatch) {
                 console.log(this.properties.currentMatch);
-                this.notes.push(this.properties.currentMatch);
+                this.notes.push({ note: this.properties.currentMatch, saved: this.properties.currentSaved, id: this.properties.currentId });
                 this.storage.set("notes", this.notes);
                 this.properties.currentMatch = "";
+                this.properties.currentSaved = false;
+                this.properties.currentId = false;
             }
             this.properties.isRecording = true;
             this.recognitionObject.start();
             AudioHandler.muteApp();
+        }
+    };
+    HomePage.prototype.copyNote = function (note) {
+        var _this = this;
+        this.clipboard.copy(note).then(function () {
+            var toast = _this.toastCtrl.create({
+                message: 'Note copied to clipboard',
+                duration: 1000,
+                position: 'bottom'
+            });
+            toast.present();
+        });
+    };
+    HomePage.prototype.shareNote = function (note) {
+        this.sharer.share(note);
+    };
+    HomePage.prototype.saveNote = function (note) {
+        var _this = this;
+        if (this.properties.currentSaved) {
+            this.properties.currentSaved = false;
+            this.storage.get("savedNotes").then(function (notes) {
+                if (notes) {
+                    for (var index in notes) {
+                        var savedNote = notes[index];
+                        if (savedNote.id === _this.properties.currentId) {
+                            notes.splice(index, 1);
+                            _this.storage.set("savedNotes", notes);
+                            _this.properties.currentId = false;
+                            break;
+                        }
+                    }
+                }
+                _this.properties.currentId = _this.notes.length + 1;
+                notes.push({ note: _this.properties.currentMatch, id: _this.properties.currentId });
+                _this.storage.set("savedNotes", notes);
+                var toast = _this.toastCtrl.create({
+                    message: 'Note saved',
+                    duration: 1000,
+                    position: 'bottom'
+                });
+                toast.present();
+            });
+        }
+        else {
+            this.properties.currentSaved = true;
+            this.storage.get("savedNotes").then(function (notes) {
+                if (!notes) {
+                    notes = [];
+                }
+                ;
+                _this.properties.currentId = notes.length + 1;
+                notes.push({ note: _this.properties.currentMatch, id: _this.properties.currentId });
+                _this.storage.set("savedNotes", notes);
+                var toast = _this.toastCtrl.create({
+                    message: 'Note saved',
+                    duration: 1000,
+                    position: 'bottom'
+                });
+                toast.present();
+            });
+        }
+    };
+    HomePage.prototype.savePreviousNote = function (note) {
+        var _this = this;
+        if (note.saved) {
+            note.saved = false;
+            this.storage.get("savedNotes").then(function (notes) {
+                if (notes) {
+                    for (var index in notes) {
+                        var savedNote = notes[index];
+                        if (savedNote.id === note.id) {
+                            notes.splice(index, 1);
+                            _this.storage.set("savedNotes", notes);
+                            note.id = false;
+                            _this.storage.set("notes", _this.notes);
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            note.saved = true;
+            this.storage.get("savedNotes").then(function (notes) {
+                if (!notes) {
+                    notes = [];
+                }
+                ;
+                note.id = notes.length + 1;
+                notes.push({ note: note.note, id: note.id });
+                _this.storage.set("notes", _this.notes);
+                _this.storage.set("savedNotes", notes);
+                var toast = _this.toastCtrl.create({
+                    message: 'Note saved',
+                    duration: 1000,
+                    position: 'bottom'
+                });
+                toast.present();
+            });
         }
     };
     HomePage.prototype.changeLanguage = function () {
@@ -376,12 +498,12 @@ var HomePage = (function () {
     };
     HomePage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-home',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/`<ion-header>\n  <ion-navbar color="primary">\n    <ion-title>Globe Notes</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n    <ion-card class="dictate-card">\n        <ion-card-header>\n            <a (click)="changeLanguage()">{{formatLanguage()}}</a>\n            <div class="actions">\n                <ion-icon name="star-outline"></ion-icon>\n                <ion-icon name="copy"></ion-icon>\n                <ion-icon name="send"></ion-icon>\n            </div>\n        </ion-card-header>\n        <ion-card-content>\n            <p *ngIf="!properties.currentMatch">Tap the mic to start dictating...</p>\n            <p *ngIf="properties.currentMatch">{{properties.currentMatch}}</p>\n        </ion-card-content>\n        <div class="card-footer">\n            Translate\n        </div>\n        <div class="dictate-button">\n            <button ion-fab (click)="toggleListening()" [color]="properties.isRecording ? \'danger\' : \'primary\'"><ion-icon name="mic"></ion-icon></button>\n            <div class="button-mic-bubble" *ngIf="properties.isRecording" [ngStyle]="{\'width\': this.properties.micVolume + \'px\', \'height\': this.properties.micVolume + \'px\'}"></div>\n        </div>\n    </ion-card>\n    \n    <div class="previous">\n        <ion-card>\n            <ion-card-content *ngFor="let note of notes">\n                <p>{{note}}</p>            \n                <ion-buttons end>\n                    <button ion-button icon-only clear>\n                        <ion-icon name="star-outline"></ion-icon>\n                    </button>                \n                </ion-buttons>\n            </ion-card-content>\n\n        </ion-card>\n    </div>\n    \n    \n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/
+            selector: 'page-home',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/`<ion-header>\n  <ion-navbar color="primary">\n    <ion-title>Globe Notes</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n    <ion-card class="dictate-card">\n        <ion-card-header>\n            <a (click)="changeLanguage()">{{formatLanguage()}}</a>\n            <div class="actions" [hidden]="!properties.currentMatch">\n                <button ion-button icon-only clear>\n                    <ion-icon [name]="properties.currentSaved ? \'star\' :\'star-outline\'" (click)="saveNote(properties.currentMatch)"></ion-icon>\n                </button>   \n                <button ion-button icon-only clear>\n                    <ion-icon name="copy" (click)="copyNote(properties.currentMatch)"></ion-icon>\n                </button> \n                <button ion-button icon-only clear>\n                    <ion-icon name="send" (click)="shareNote(properties.currentMatch)"></ion-icon>\n                </button>               \n                \n                \n                \n            </div>\n        </ion-card-header>\n        <ion-card-content>\n            <p class="pre-recording" *ngIf="!properties.currentMatch && !properties.isRecording">Tap the mic to start dictating...</p>\n            <p class="pre-recording" *ngIf="!properties.currentMatch && properties.isRecording">Start talking...</p>\n            <p *ngIf="properties.currentMatch">{{properties.currentMatch}}</p>\n        </ion-card-content>\n        <div class="card-footer">\n            <button ion-button clear [hidden]="!properties.currentMatch">Translate</button>\n        </div>\n        <div class="dictate-button">\n            <button ion-fab (click)="toggleListening()" [color]="properties.isRecording ? \'danger\' : \'primary\'"><ion-icon name="mic"></ion-icon></button>\n        </div>\n    </ion-card>\n    \n    <div class="previous">\n        <ion-card *ngFor="let note of notes">\n            <ion-card-content>\n                <p>{{note.note}}</p>            \n                <ion-buttons end>\n                    <button ion-button icon-only clear (click)="savePreviousNote(note)">\n                        <ion-icon [name]="note.saved ? \'star\' :\'star-outline\'"></ion-icon>\n                    </button>                \n                </ion-buttons>\n            </ion-card-content>\n\n        </ion-card>\n    </div>\n    \n    \n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/
         }),
-        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]) === "function" && _f || Object])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_clipboard__["a" /* Clipboard */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_clipboard__["a" /* Clipboard */]) === "function" && _g || Object, typeof (_h = typeof __WEBPACK_IMPORTED_MODULE_4__ionic_native_social_sharing__["a" /* SocialSharing */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__ionic_native_social_sharing__["a" /* SocialSharing */]) === "function" && _h || Object, typeof (_j = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* ToastController */]) === "function" && _j || Object])
     ], HomePage);
     return HomePage;
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 }());
 
 //# sourceMappingURL=home.js.map
@@ -418,12 +540,16 @@ Object(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* pl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__ionic_native_status_bar__ = __webpack_require__(190);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__ionic_native_splash_screen__ = __webpack_require__(193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__ionic_storage__ = __webpack_require__(198);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__ionic_native_clipboard__ = __webpack_require__(278);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__ionic_native_social_sharing__ = __webpack_require__(279);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -465,6 +591,8 @@ var AppModule = (function () {
             providers: [
                 __WEBPACK_IMPORTED_MODULE_8__ionic_native_status_bar__["a" /* StatusBar */],
                 __WEBPACK_IMPORTED_MODULE_9__ionic_native_splash_screen__["a" /* SplashScreen */],
+                __WEBPACK_IMPORTED_MODULE_11__ionic_native_clipboard__["a" /* Clipboard */],
+                __WEBPACK_IMPORTED_MODULE_12__ionic_native_social_sharing__["a" /* SocialSharing */],
                 { provide: __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ErrorHandler */], useClass: __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["c" /* IonicErrorHandler */] }
             ]
         })
