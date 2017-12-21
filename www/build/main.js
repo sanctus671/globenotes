@@ -248,6 +248,9 @@ var HomePage = (function () {
                 });
             }
         });
+        this.recognitionObject.onpartial = (function (event) {
+            console.log(event);
+        });
     };
     HomePage.prototype.toggleListening = function () {
         if (this.properties.isRecording) {
@@ -263,10 +266,6 @@ var HomePage = (function () {
             }
             this.properties.isRecording = true;
             this.recognitionObject.start();
-            audioinput.start({
-                streamToWebAudio: true
-            });
-            audioinput.connect(audioinput.getAudioContext().destination);
         }
     };
     HomePage.prototype.changeLanguage = function () {
