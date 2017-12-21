@@ -207,7 +207,7 @@ var HomePage = (function () {
             console.log('Stopped recognition.');
             if (_this.properties.isRecording) {
                 console.log("Attempting to restart.");
-                _this.recognitionObject.start();
+                setTimeout(function () { _this.recognitionObject.start(); }, 300);
                 var errorCount_1 = 0;
                 var errorLoop_1 = setInterval(function () {
                     console.log("is error loop");
@@ -225,7 +225,7 @@ var HomePage = (function () {
                         clearInterval(errorLoop_1);
                     }
                     errorCount_1 += 1;
-                }, 200);
+                }, 300);
             }
         });
         this.recognitionObject.onerror = (function (event) {
