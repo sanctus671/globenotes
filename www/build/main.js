@@ -174,7 +174,7 @@ var HomePage = (function () {
         this._zone = _zone;
         this.storage = storage;
         this.alertCtrl = alertCtrl;
-        this.properties = { isRecording: false, language: "en-US", isIos: this.plt.is('ios'), currentMatch: "", errorRestarting: false };
+        this.properties = { isRecording: false, language: "en-US", isIos: this.plt.is('ios'), currentMatch: "", errorRestarting: false, micVolume: 0 };
         this.notes = [];
         this.languages = [];
         this.storage.get("notes").then(function (data) {
@@ -187,9 +187,9 @@ var HomePage = (function () {
             console.log(window);
             if (window.SpeechRecognition) {
                 _this.setupRecognition();
+                console.log(audioPoll);
+                console.log(AudioHandler);
             }
-            console.log(audioinput);
-            console.log(AudioHandler);
         });
     }
     HomePage.prototype.setupRecognition = function () {
@@ -253,6 +253,11 @@ var HomePage = (function () {
         if (this.properties.isRecording) {
             this.properties.isRecording = false;
             this.properties.errorRestarting = false;
+            audioPoll.stop(function () {
+                console.log("mic polling stopped");
+            }, function () {
+                console.log("error stopping mic polling");
+            });
         }
         else {
             if (this.properties.currentMatch) {
@@ -263,7 +268,22 @@ var HomePage = (function () {
             }
             this.properties.isRecording = true;
             this.recognitionObject.start();
+            audioPoll.start(function () {
+                console.log("mic polling started");
+            }, function () {
+                console.log("error starting mic polling");
+            });
         }
+    };
+    HomePage.prototype.getMicVolume = function () {
+        var _this = this;
+        audioPoll.read(function (reading) {
+            console.log(reading);
+            _this.properties.micVolume = reading.volume;
+        }, function () {
+            console.log("erroring reading mic");
+        });
+        return this.properties.micVolume;
     };
     HomePage.prototype.changeLanguage = function () {
         var _this = this;
@@ -371,7 +391,7 @@ var HomePage = (function () {
     };
     HomePage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-home',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/`<ion-header>\n  <ion-navbar color="primary">\n    <ion-title>Globe Notes</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n    <ion-card class="dictate-card">\n        <ion-card-header>\n            <a (click)="changeLanguage()">{{formatLanguage()}}</a>\n            <div class="actions">\n                <ion-icon name="star-outline"></ion-icon>\n                <ion-icon name="copy"></ion-icon>\n                <ion-icon name="send"></ion-icon>\n            </div>\n        </ion-card-header>\n        <ion-card-content>\n            <p *ngIf="!properties.currentMatch">Tap the mic to start dictating...</p>\n            <p *ngIf="properties.currentMatch">{{properties.currentMatch}}</p>\n        </ion-card-content>\n        <div class="card-footer">\n            Translate\n        </div>\n        <div class="dictate-button">\n            <button ion-fab (click)="toggleListening()" [color]="properties.isRecording ? \'danger\' : \'primary\'"><ion-icon name="mic"></ion-icon></button>\n        </div>\n    </ion-card>\n    \n    <div class="previous">\n        <ion-card>\n            <ion-card-content *ngFor="let note of notes">\n                <p>{{note}}</p>            \n                <ion-buttons end>\n                    <button ion-button icon-only clear>\n                        <ion-icon name="star-outline"></ion-icon>\n                    </button>                \n                </ion-buttons>\n            </ion-card-content>\n\n        </ion-card>\n    </div>\n    \n    \n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/
+            selector: 'page-home',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/`<ion-header>\n  <ion-navbar color="primary">\n    <ion-title>Globe Notes</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n    <ion-card class="dictate-card">\n        <ion-card-header>\n            <a (click)="changeLanguage()">{{formatLanguage()}}</a>\n            <div class="actions">\n                <ion-icon name="star-outline"></ion-icon>\n                <ion-icon name="copy"></ion-icon>\n                <ion-icon name="send"></ion-icon>\n            </div>\n        </ion-card-header>\n        <ion-card-content>\n            <p *ngIf="!properties.currentMatch">Tap the mic to start dictating...</p>\n            <p *ngIf="properties.currentMatch">{{properties.currentMatch}}</p>\n        </ion-card-content>\n        <div class="card-footer">\n            Translate\n        </div>\n        <div class="dictate-button">\n            <button ion-fab (click)="toggleListening()" [color]="properties.isRecording ? \'danger\' : \'primary\'"><ion-icon name="mic"></ion-icon></button>\n            <div class="button-mic-bubble" *ngIf="properties.isRecording" [ngStyle]="{\'width\': getMicVolume() + \'px\', \'height\': getMicVolume() + \'px\'}"></div>\n        </div>\n    </ion-card>\n    \n    <div class="previous">\n        <ion-card>\n            <ion-card-content *ngFor="let note of notes">\n                <p>{{note}}</p>            \n                <ion-buttons end>\n                    <button ion-button icon-only clear>\n                        <ion-icon name="star-outline"></ion-icon>\n                    </button>                \n                </ion-buttons>\n            </ion-card-content>\n\n        </ion-card>\n    </div>\n    \n    \n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\home\home.html"*/
         }),
         __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* NgZone */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]) === "function" && _f || Object])
     ], HomePage);
