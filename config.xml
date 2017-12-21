@@ -87,5 +87,6 @@
     <gap:plugin spec="https://github.com/litehelpers/Cordova-sqlite-legacy-build-support.git#master" />
     <gap:plugin spec="https://github.com/vijtad/SpeechRecognizer" />
     <gap:plugin spec="https://github.com/sesubash/cordova-plugin-mute-app" />
+    <gap:plugin spec="https://github.com/edimuj/cordova-plugin-audioinput" />
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.1" />
 </widget>

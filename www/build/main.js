@@ -188,6 +188,8 @@ var HomePage = (function () {
             if (window.SpeechRecognition) {
                 _this.setupRecognition();
             }
+            console.log(audioinput);
+            console.log(AudioHandler);
         });
     }
     HomePage.prototype.setupRecognition = function () {
