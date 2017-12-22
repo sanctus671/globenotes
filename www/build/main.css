@@ -25691,6 +25691,11 @@ ion-navbar.toolbar {
   bottom: -22px;
 }
 
+.dictate-card p {
+  max-height: 6em;
+  overflow-y: scroll;
+}
+
 p.pre-recording {
   color: #dedede;
 }
@@ -25730,4 +25735,25 @@ p.pre-recording {
 
 .previous .card ion-buttons {
   float: Right;
+}
+
+.language-translations .translation {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ccc;
+}
+
+.language-translations .translation p {
+  width: 100%;
+}
+
+.language-translations .translation .translation-title {
+  display: block;
+  color: #488aff;
+  margin-bottom: 5px;
+}
+
+.language-translations .translation .translation-title .button {
+  float: right;
+  margin-top: -2px;
 }
