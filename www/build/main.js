@@ -306,9 +306,9 @@ var HomePage = (function () {
         this.events = events;
         this.modalCtrl = modalCtrl;
         this.translateProvider = translateProvider;
-        this.properties = { isRecording: false, language: "en", isIos: this.plt.is('ios'), previousDelete: false, previousNotePosition: 0,
+        this.properties = { isRecording: false, language: "EN", isIos: this.plt.is('ios'), previousDelete: false, previousNotePosition: 0,
             translations: [],
-            currentMatch: "test",
+            currentMatch: "",
             partialMatch: "", errorRestarting: false, micVolume: 0, currentSaved: false, currentId: false };
         this.notes = [];
         this.languages = [];
