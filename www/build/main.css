@@ -25687,13 +25687,23 @@ ion-navbar.toolbar {
   overflow: visible;
   height: 56px;
   position: absolute;
-  width: 100%;
+  width: 56px;
   bottom: -22px;
+  margin: 0 auto;
+  z-index: 1;
+  left: 40%;
+  left: calc(50% - 28px);
 }
 
 .dictate-card p {
   max-height: 6em;
   overflow-y: scroll;
+}
+
+@media (min-width: 767px) {
+  .dictate-card p {
+    max-height: 15em;
+  }
 }
 
 p.pre-recording {
@@ -25709,7 +25719,7 @@ p.pre-recording {
   min-height: 44px;
 }
 
-.dictate-card .actions {
+.dictate-card .actions, .previous .actions {
   display: inline-block;
   float: right;
   margin-top: -5px;
@@ -25730,7 +25740,22 @@ p.pre-recording {
   min-height: 34px;
   display: inline-block;
   margin-top: 10px;
-  max-width: calc(100% - 60px);
+  overflow: hidden;
+  white-space: normal;
+  margin: 0 0 2px;
+  font-size: 1.4rem;
+  font-weight: normal;
+  line-height: 1.5;
+  color: #222;
+  max-height: 6em;
+  overflow-y: scroll;
+  width: 100%;
+}
+
+@media (min-width: 767px) {
+  .previous .card p {
+    max-height: 15em;
+  }
 }
 
 .previous .card ion-buttons {
@@ -25756,4 +25781,40 @@ p.pre-recording {
 .language-translations .translation .translation-title .button {
   float: right;
   margin-top: -2px;
+}
+
+.fullwidth-slide {
+  width: 200px;
+}
+
+.previous ion-item-sliding:not(.active-slide) {
+  opacity: 1 !important;
+  -webkit-transition: opacity 100ms linear;
+  transition: opacity 100ms linear;
+}
+
+ion-item-sliding .item {
+  padding: 0px !important;
+}
+
+.previous .item-inner {
+  padding: 0px !important;
+  border: none !important;
+}
+
+.previous ion-card-header {
+  font-size: 1.4rem;
+  padding-bottom: 5px;
+}
+
+.previous ion-label {
+  margin: 0px;
+}
+
+.previous.saved-notes {
+  margin-top: 0px;
+}
+
+.settings-list ion-input .text-input {
+  text-align: right;
 }
