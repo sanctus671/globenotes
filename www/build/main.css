@@ -25678,6 +25678,25 @@ ion-navbar.toolbar {
   min-height: calc(46px + env(safe-area-inset-bottom));
 }
 
+.premium-header {
+  text-align: center;
+  max-width: 300px;
+  margin: 0 auto;
+  padding-bottom: 25px;
+}
+
+.premium-list .item p {
+  white-space: pre-wrap;
+}
+
+.restore {
+  text-align: center;
+  max-width: 300px;
+  padding: 10px 20px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+
 .dictate-card.card {
   position: relative;
   overflow: visible;
@@ -25817,4 +25836,25 @@ ion-item-sliding .item {
 
 .settings-list ion-input .text-input {
   text-align: right;
+}
+
+.settings-list ion-item {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+ion-icon[name="trophy"] {
+  color: #FFBF00;
+}
+
+ion-icon[name="heart"] {
+  color: #E31B23;
+}
+
+ion-icon[name="logo-facebook"] {
+  color: #3B5998;
+}
+
+ion-icon[name="mail"] {
+  color: grey;
 }
