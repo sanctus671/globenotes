@@ -240,7 +240,7 @@ var SettingsPage = (function () {
         this.iab = iab;
         this.modalCtrl = modalCtrl;
         this.languages = [];
-        this.settings = { language: "EN ", translations: [], historyMax: 10 };
+        this.settings = { language: "EN", translations: [], historyMax: 10 };
         this.storage.get("languages").then(function (data) {
             if (data) {
                 _this.languages = data;
