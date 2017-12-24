@@ -231,7 +231,7 @@ var SettingsPage = (function () {
         this.storage = storage;
         this.events = events;
         this.languages = [];
-        this.settings = { language: "en-NZ", translations: [], historyMax: 10 };
+        this.settings = { language: "EN", translations: [], historyMax: 10 };
         this.storage.get("languages").then(function (data) {
             if (data) {
                 _this.languages = data;
@@ -253,9 +253,10 @@ var SettingsPage = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'page-settings',template:/*ion-inline-start:"D:\Taylor\Documents\Websites\globenotes\src\pages\settings\settings.html"*/`<ion-header>\n  <ion-navbar color="primary">\n    <ion-title>\n      Settings\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n    \n<ion-list class="settings-list">\n    <ion-item>\n        <ion-label>Default Language</ion-label>\n        <ion-select [(ngModel)]="settings.language" (ionChange)="updateSettings()">\n            <ion-option *ngFor="let language of languages" value="{{language.code}}">{{language.name}}</ion-option>\n        </ion-select>\n    </ion-item>\n    \n    \n    <ion-item>\n        <ion-label>Default Translations</ion-label>\n        <ion-select [(ngModel)]="settings.translations" multiple="true" (ionChange)="updateSettings()">\n            <ion-option *ngFor="let language of languages" value="{{language.code}}">{{language.name}}</ion-option>\n        </ion-select>\n    </ion-item>   \n    \n  <ion-item>\n    <ion-label>Max Note History</ion-label>\n    <ion-input type="number" [(ngModel)]="settings.historyMax" (change)="updateSettings()"></ion-input>\n  </ion-item>    \n    \n    \n</ion-list>\n    \n    \n</ion-content>\n`/*ion-inline-end:"D:\Taylor\Documents\Websites\globenotes\src\pages\settings\settings.html"*/
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* Events */]])
+        __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_storage__["b" /* Storage */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* Events */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* Events */]) === "function" && _c || Object])
     ], SettingsPage);
     return SettingsPage;
+    var _a, _b, _c;
 }());
 
 //# sourceMappingURL=settings.js.map
