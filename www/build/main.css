@@ -25834,6 +25834,18 @@ ion-item-sliding .item {
   margin-top: 0px;
 }
 
+.saved-empty {
+  margin-top: 140px;
+  color: #d6d6d6;
+  text-align: center;
+  font-size: 18px;
+}
+
+.saved-empty ion-icon {
+  display: block;
+  font-size: 80px;
+}
+
 .settings-list ion-input .text-input {
   text-align: right;
 }
